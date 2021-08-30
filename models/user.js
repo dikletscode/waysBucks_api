@@ -13,6 +13,18 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  User.auth = (password, hashed) => {
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, hashed, (err, isAuth) => {
+        if (isAuth) {
+          resolve(true);
+        } else {
+          reject(false);
+        }
+      });
+    });
+  };
+
   User.init(
     {
       id: {
