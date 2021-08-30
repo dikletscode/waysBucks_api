@@ -7,6 +7,13 @@ const {
   editProduct,
   deleteProduct,
 } = require("../controllers/product");
+const {
+  createTopping,
+  getToppins,
+  getDetailTopping,
+  editTopping,
+  deleteTopping,
+} = require("../controllers/topping");
 const { getUser, deleteUser } = require("../controllers/users");
 const {
   inputValidation,
@@ -24,4 +31,9 @@ route.get("/products", getProducts);
 route.get("/product/:id", getDetailProduct);
 route.put("/product/:id", editProduct);
 route.delete("/product/:id", deleteProduct);
+route.post("/topping", createTopping);
+route.get("/toppings", getToppins);
+route.get("/topping/:id", getDetailTopping);
+route.put("/topping/:id", editTopping);
+route.delete("/topping/:id", deleteTopping);
 module.exports = route;
