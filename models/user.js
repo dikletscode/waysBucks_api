@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.hasMany(models.Transaction, {
+        foreignKey: "userId",
+        as: "users",
+      });
     }
   }
 
@@ -17,9 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     return new Promise((resolve, reject) => {
       bcrypt.compare(password, hashed, (err, isAuth) => {
         if (isAuth) {
-          resolve(true);
+          resolve({ error: false });
         } else {
-          reject(false);
+          reject({ error: true });
         }
       });
     });

@@ -1,14 +1,19 @@
 const { Product } = require("../../models");
+const cloudinary = require("../config/cloudinary");
 
 exports.createProducts = async (req, res) => {
-  const { title, price, images } = req.body;
-
+  const { title, price } = req.body;
   try {
-    let data = await Product.create({ title, price, images });
+    let file = await cloudinary.uploader.upload(req.file.path, {
+      folder: "products",
+      use_filename: true,
+    });
+
+    let data = await Product.create({ title, price, image: file.secure_url });
     res.send({ product: data });
   } catch (error) {
     console.log(error);
-    res.send("error");
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
 
@@ -19,8 +24,7 @@ exports.getProducts = async (req, res) => {
     });
     res.send({ product: data });
   } catch (error) {
-    console.log(error);
-    res.send("error");
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
 
@@ -34,7 +38,7 @@ exports.getDetailProduct = async (req, res) => {
     res.send({ product: data });
   } catch (error) {
     console.log(error);
-    res.send("error");
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
 
@@ -52,8 +56,7 @@ exports.editProduct = async (req, res) => {
     );
     res.send({ product: data });
   } catch (error) {
-    console.log(error);
-    res.send("error");
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
 
@@ -65,6 +68,6 @@ exports.deleteProduct = async (req, res) => {
     res.send({ product: data });
   } catch (error) {
     console.log(error);
-    res.send("error");
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };

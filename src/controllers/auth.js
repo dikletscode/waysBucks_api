@@ -7,7 +7,6 @@ exports.register = async (req, res) => {
     await User.create({ fullname, email, password, role });
     res.status(201).send({ message: "account created successfully!" });
   } catch (error) {
-    console.log(error);
     if (error.parent.code == "ER_DUP_ENTRY") {
       res.status(209).send({ message: "email has been used!" });
     } else {
@@ -18,11 +17,11 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  const pswInDb = await User.findOne({
-    where: { email: email },
-    attributes: ["password"],
-  });
   try {
+    const pswInDb = await User.findOne({
+      where: { email: email },
+      attributes: ["password"],
+    });
     await User.auth(password, pswInDb.password);
     const dataClient = await User.findOne({
       where: { email: email },
@@ -33,9 +32,13 @@ exports.login = async (req, res) => {
       message: "login success",
       data: { user: dataClient, token: createAccessToken(dataClient) },
     });
-  } catch (error) {
-    res
-      .status(401)
-      .json({ msg: "email, password or both are invalid", data: null });
+  } catch (err) {
+    if (err.error == true || err instanceof TypeError) {
+      res
+        .status(401)
+        .json({ msg: "email, password or both are invalid", data: null });
+    } else {
+      res.status(500).send({ error: { message: "an error onccured" } });
+    }
   }
 };

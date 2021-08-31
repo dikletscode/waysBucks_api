@@ -8,7 +8,7 @@ exports.getUser = async (req, res) => {
     res.status(201).send({ users: users });
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error: { message: "error" } });
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
 
@@ -22,6 +22,6 @@ exports.deleteUser = async (req, res) => {
     res.status(201).send({ data: users });
   } catch (error) {
     console.log(error);
-    res.status(400).send({ error: { message: "error" } });
+    res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
