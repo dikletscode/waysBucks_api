@@ -2,24 +2,32 @@ const { Product, Topping } = require("../../models");
 const cloudinary = require("../config/cloudinary");
 
 exports.createTopping = async (req, res) => {
-  const { title, price, images } = req.body;
-  try {
-    let image = req.file.filename;
+  const { title, price } = req.body;
+  if (req.user.role == 1) {
+    try {
+      let imageUrl = await cloudinary.uploader.upload(req.file.path, {
+        folder: "toppings",
+        use_filename: true,
+      });
 
-    let url = await cloudinary.uploader.upload(req.file.path, {
-      folder: "toppings",
-      use_filename: true,
-    });
-
-    let data = await Topping.create({ title, price, image: image });
-    res.send({ product: data });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: { message: "an Error occurred" } });
+      let data = await Topping.create({
+        title,
+        price,
+        image: imageUrl.secure_url,
+      });
+      res.send({ product: data });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ error: { message: "an Error occurred" } });
+    }
+  } else {
+    res
+      .status(403)
+      .send({ message: "you are not given permission to access this" });
   }
 };
 
-exports.getToppins = async (req, res) => {
+exports.getToppings = async (req, res) => {
   try {
     let data = await Topping.findAll({
       attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -27,7 +35,7 @@ exports.getToppins = async (req, res) => {
     res.send({ product: data });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: { message: "an Error occurred" } });
+    res.status(500).send({ message: "an Error occurred" });
   }
 };
 

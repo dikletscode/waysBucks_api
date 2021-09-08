@@ -8,11 +8,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      userId: {
+        type: Sequelize.UUID,
+      },
       status: {
         type: Sequelize.STRING,
       },
-      userId: {
+      userOrderId: {
         type: Sequelize.UUID,
+      },
+      totalPrice: {
+        type: Sequelize.INTEGER,
+      },
+      cartId: {
+        type: Sequelize.INTEGER,
+      },
+      attachment: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

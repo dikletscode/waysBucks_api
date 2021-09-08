@@ -9,9 +9,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Transaction, {
+      this.hasMany(models.Cart, {
         foreignKey: "userId",
         as: "users",
+      });
+      this.hasMany(models.Transaction, {
+        foreignKey: "",
+      });
+      this.hasOne(models.Profile, {
+        foreignKey: "userId",
+        as: "profile",
       });
     }
   }
@@ -36,11 +43,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      fullname: DataTypes.STRING,
       role: DataTypes.INTEGER,
       email: DataTypes.STRING,
       password: DataTypes.STRING,
-      images: DataTypes.STRING,
     },
     {
       sequelize,

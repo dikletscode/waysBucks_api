@@ -1,14 +1,28 @@
-const { User } = require("../../models");
+const { User, Profile } = require("../../models");
+
 const createAccessToken = require("../util/accessToken");
 
 exports.register = async (req, res) => {
-  const { fullname, email, password, role } = req.body;
+  const { fullname, email, password } = req.body;
   try {
-    await User.create({ fullname, email, password, role });
+    await User.create(
+      {
+        email,
+        password,
+        profile: {
+          fullname: fullname,
+        },
+      },
+      {
+        include: { model: Profile, as: "profile" },
+      }
+    );
+
     res.status(201).send({ message: "account created successfully!" });
   } catch (error) {
+    console.log(error);
     if (error.parent.code == "ER_DUP_ENTRY") {
-      res.status(209).send({ message: "email has been used!" });
+      res.status(409).send({ message: "email has been used!" });
     } else {
       res.status(500).send({ message: "an error occured" });
     }
@@ -25,20 +39,27 @@ exports.login = async (req, res) => {
     await User.auth(password, pswInDb.password);
     const dataClient = await User.findOne({
       where: { email: email },
-      attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+      attributes: ["id", "role"],
     });
 
     res.status(201).send({
-      message: "login success",
-      data: { user: dataClient, token: createAccessToken(dataClient) },
+      status: "success",
+      user: dataClient,
+      token: createAccessToken(dataClient),
     });
   } catch (err) {
-    if (err.error == true || err instanceof TypeError) {
+    if (err.error == true) {
       res
         .status(401)
-        .json({ msg: "email, password or both are invalid", data: null });
+        .json({ message: "email or password are invalid", data: null });
+    } else if (err instanceof TypeError) {
+      res.status(401).json({
+        message: "email or password are invalid",
+        data: null,
+      });
     } else {
-      res.status(500).send({ error: { message: "an error onccured" } });
+      console.log(err);
+      res.status(500).send({ message: "system is being repaired" });
     }
   }
 };

@@ -11,8 +11,12 @@ module.exports = {
       toppingId: {
         type: Sequelize.INTEGER,
       },
-      productTopping: {
+      cartId: {
         type: Sequelize.INTEGER,
+      },
+
+      userId: {
+        type: Sequelize.UUID,
       },
       createdAt: {
         allowNull: false,

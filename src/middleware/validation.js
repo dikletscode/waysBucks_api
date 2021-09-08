@@ -4,7 +4,6 @@ const schema = Joi.object({
   fullname: Joi.string().min(5).required(),
   email: Joi.string().email().min(6).required(),
   password: Joi.string().min(6).required(),
-  role: Joi.number(),
 });
 
 const schemaLogin = Joi.object({
@@ -21,9 +20,7 @@ exports.inputValidation = (req, res, next) => {
   } else {
     console.log(error);
     res.status(422).send({
-      error: {
-        message: "invalid input",
-      },
+      message: "invalid input",
     });
   }
 };
@@ -37,9 +34,7 @@ exports.loginValidation = (req, res, next) => {
   } else {
     console.log(error);
     res.status(422).send({
-      error: {
-        message: "invalid input",
-      },
+      message: "invalid input",
     });
   }
 };
