@@ -30,27 +30,30 @@ exports.updateProfile = async (req, res) => {
   const { fullname } = req.body;
 
   try {
-    let file = await cloudinary.uploader.upload(req.file.path, {
-      folder: "users",
-      use_filename: true,
-    });
-    let users = await Profile.update(
-      {
-        fullname: fullname,
-        image: file.secure_url,
-      },
-      { where: { userId: req.user.id } }
-    );
-    let newData = await User.findOne({
-      where: { id: req.user.id },
-      attributes: ["email"],
-      include: { model: Profile, as: "profile" },
-    });
-    console.log(users);
-    res.status(201).send({ users: newData });
+    if (req.file) {
+      let file = await cloudinary.uploader.upload(req.file.path, {
+        folder: "users",
+        use_filename: true,
+      });
+      let users = await Profile.update(
+        {
+          fullname: fullname,
+          image: file.secure_url,
+        },
+        { where: { userId: req.user.id } }
+      );
+      let newData = await User.findOne({
+        where: { id: req.user.id },
+        attributes: ["email"],
+        include: { model: Profile, as: "profile" },
+      });
+      console.log(users);
+      res.status(201).send({ users: newData });
+    } else {
+      res.status(422).send({ message: "can not be empty" });
+    }
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: { message: "an Error occurred" } });
+    res.status(500).send({ message: error ? error : "an Error occurred" });
   }
 };
 

@@ -39,14 +39,26 @@ exports.login = async (req, res) => {
     await User.auth(password, pswInDb.password);
     const dataClient = await User.findOne({
       where: { email: email },
-      attributes: ["id", "role"],
+      attributes: ["id", "role", "email"],
+      include: {
+        model: Profile,
+        as: "profile",
+        attributes: ["image", "fullname"],
+      },
     });
-
-    res.status(201).send({
+    const data = {
       status: "success",
-      user: dataClient,
       token: createAccessToken(dataClient),
-    });
+      user: {
+        id: dataClient.id,
+        role: dataClient.role,
+        image: dataClient.profile.image,
+        email: dataClient.email,
+        fullname: dataClient.profile.fullname,
+      },
+    };
+
+    res.status(201).send(data);
   } catch (err) {
     if (err.error == true) {
       res

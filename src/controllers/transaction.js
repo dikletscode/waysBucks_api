@@ -7,6 +7,7 @@ const {
   Topping,
   Product,
   Cart,
+  User,
   History,
 } = require("../../models");
 
@@ -113,7 +114,7 @@ exports.getTransaction = async (req, res) => {
 exports.getGlobalTransaction = async (req, res) => {
   try {
     let data = await Transaction.findAll({
-      attributes: ["status", "attachment", "updatedAt", "totalPrice", "id"],
+      attributes: { exclude: ["updatedAt", "id", "UserId"] },
       include: [
         {
           model: History,
@@ -212,6 +213,7 @@ exports.getTransaction = async (req, res) => {
         { model: Product, as: "products" },
       ],
     });
+
     res.send({ product: data });
   } catch (error) {
     console.log(error);
