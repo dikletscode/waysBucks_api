@@ -15,6 +15,6 @@ const route = Router();
 route.post("/product", multer.single("image"), jwtVerify, createProducts);
 route.get("/products", getProducts);
 route.get("/product/:id", getDetailProduct);
-route.put("/product/:id", jwtVerify, editProduct);
+route.put("/product/:id", multer.single("image"), jwtVerify, editProduct);
 route.delete("/product/:id", jwtVerify, deleteProduct);
 module.exports = route;

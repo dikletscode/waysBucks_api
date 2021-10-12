@@ -4,9 +4,9 @@ module.exports = {
     await queryInterface.createTable("transactions", {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
       },
       userId: {
         type: Sequelize.UUID,
@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       userOrderId: {
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
       },
       totalPrice: {
         type: Sequelize.INTEGER,
@@ -24,6 +24,9 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       attachment: {
+        type: Sequelize.STRING,
+      },
+      cloudId: {
         type: Sequelize.STRING,
       },
       createdAt: {

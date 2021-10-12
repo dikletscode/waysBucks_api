@@ -15,10 +15,10 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       userId: {
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
       },
       transactionId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
       },
       price: {
         type: Sequelize.INTEGER,

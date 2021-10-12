@@ -1,10 +1,10 @@
 {
   "development": {
-    "username": "admin2",
-    "password": "wuysback321",
+    "username": "admin",
+    "password": "kapalApi123",
     "database": "waysbuck",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres"
   },
   "test": {
     "username": "root",

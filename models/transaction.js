@@ -25,14 +25,25 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userOrderId",
         as: "orderUser",
       });
+      this.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "users",
+      });
     }
   }
   Transaction.init(
     {
-      userId: DataTypes.UUID,
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+      },
       status: DataTypes.STRING,
       attachment: DataTypes.STRING,
+      userId: DataTypes.UUID,
       totalPrice: DataTypes.INTEGER,
+      cloudId: DataTypes.STRING,
     },
     {
       sequelize,

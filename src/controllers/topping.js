@@ -14,6 +14,7 @@ exports.createTopping = async (req, res) => {
         title,
         price,
         image: imageUrl.secure_url,
+        cloudId: imageUrl.public_id,
       });
       res.send({ product: data });
     } catch (error) {
@@ -55,16 +56,29 @@ exports.getDetailTopping = async (req, res) => {
 
 exports.editTopping = async (req, res) => {
   let id = req.params.id;
-  const { title, price, image } = req.body;
+  const { title, price } = req.body;
   try {
+    const topping = await Topping.findByPk(id);
+
+    const file = req.file
+      ? await cloudinary.uploader.upload(req.file.path, {
+          folder: "toppings",
+          use_filename: true,
+        })
+      : null;
     let data = await Topping.update(
       {
         title: title,
         price: price,
-        image: image,
+        image: file ? file.secure_url : topping.image,
+        cloudId: file ? file.public_id : topping.cloudId,
       },
       { where: { id: id } }
     );
+    if (file) {
+      await cloudinary.uploader.destroy(topping.cloudId);
+    }
+    console.log(data);
     res.send({ product: data });
   } catch (error) {
     console.log(error);
@@ -76,7 +90,9 @@ exports.deleteTopping = async (req, res) => {
   let id = req.params.id;
 
   try {
+    let topping = await Topping.findByPk(id);
     let data = await Topping.destroy({ where: { id: id } });
+    await cloudinary.uploader.destroy(topping.cloudId);
     res.send({ product: data });
   } catch (error) {
     console.log(error);

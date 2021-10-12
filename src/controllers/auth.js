@@ -1,6 +1,6 @@
 const { User, Profile } = require("../../models");
-
-const createAccessToken = require("../util/accessToken");
+const redis = require("../config/redis");
+const { createAccessToken } = require("../util/accessToken");
 
 exports.register = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -46,25 +46,17 @@ exports.login = async (req, res) => {
         attributes: ["image", "fullname"],
       },
     });
+    const token = createAccessToken(dataClient);
+
     const data = {
       status: "success",
-      token: createAccessToken(dataClient),
-      user: {
-        id: dataClient.id,
-        role: dataClient.role,
-        image: dataClient.profile.image,
-        email: dataClient.email,
-        fullname: dataClient.profile.fullname,
-      },
+      token: token,
+      user: dataClient,
     };
-
+    console.log(data);
     res.status(201).send(data);
   } catch (err) {
-    if (err.error == true) {
-      res
-        .status(401)
-        .json({ message: "email or password are invalid", data: null });
-    } else if (err instanceof TypeError) {
+    if (err.error == true || err instanceof TypeError) {
       res.status(401).json({
         message: "email or password are invalid",
         data: null,

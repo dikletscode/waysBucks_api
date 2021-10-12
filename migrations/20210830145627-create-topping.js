@@ -17,6 +17,9 @@ module.exports = {
       image: {
         type: Sequelize.STRING,
       },
+      cloudId: {
+        type: Sequelize.STRING,
+      },
 
       createdAt: {
         allowNull: false,

@@ -28,10 +28,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   History.init(
     {
-      transactionId: DataTypes.INTEGER,
+      transactionId: DataTypes.UUID,
       productId: DataTypes.INTEGER,
       qty: DataTypes.INTEGER,
-      userId: DataTypes.STRING,
+      userId: DataTypes.UUID,
       price: DataTypes.INTEGER,
     },
     {

@@ -8,15 +8,19 @@ const jwtVerify = (req, res, next) => {
     const token = auth && auth.split(" ")[1];
     jwt.verify(token, process.env.SECRET_TOKEN, (err, decode) => {
       if (err) {
+        const message =
+          err.name === "JsonWebTokenError"
+            ? { message: "unauthorized", code: "401" }
+            : { message: "expired", code: "403" };
         console.log(err);
-        return res.status(403).send("Forbidden");
+        return res.status(403).json(message);
       }
-      console.log(decode);
+
       req.user = decode;
-      next();
+      return next();
     });
   } else {
-    res.status(401).send("u can't access,not authenticated");
+    return res.status(401).send("u can't access,not authenticated");
   }
 };
 module.exports = jwtVerify;
