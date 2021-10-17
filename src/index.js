@@ -4,7 +4,7 @@ const http = require("http");
 const user = require("./routes/user");
 const topping = require("./routes/topping");
 const product = require("./routes/product");
-
+const port = process.env.PORT || 2021;
 const cors = require("cors");
 const app = express();
 
@@ -52,6 +52,6 @@ app.use(express.json());
 app.use("/api/v1", user);
 app.use("/api/v1", topping);
 app.use("/api/v1", product);
-server.listen(2021, () => {
-  console.log("server running on http://localhost:2021");
+server.listen(port, () => {
+  console.log("server running on http://localhost:" + port);
 });

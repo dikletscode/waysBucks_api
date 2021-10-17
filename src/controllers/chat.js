@@ -1,42 +1,5 @@
-const { Notif, Chat } = require("../../models");
+const { Chat } = require("../../models");
 
-exports.sendNotif = async (req, res) => {
-  const { recipent, sender, msg } = req.body;
-  try {
-    await Notif.create({
-      idrecipent: recipent,
-      idsender: sender,
-      message: msg,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.findNotif = async (req, res) => {
-  const { idrecipent } = req.body;
-  try {
-    let data = await Notif.findAll({
-      where: { idrecipent: idrecipent },
-      order: [["updatedAt", "DESC"]],
-    });
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.delMsg = async (id) => {
-  try {
-    let data = await Notif.destroy({
-      where: { id: id },
-    });
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
 exports.chat = async (req, res) => {
   let { chat, room } = req.body;
   try {
