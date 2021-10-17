@@ -45,7 +45,16 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       role: DataTypes.INTEGER,
-      email: DataTypes.STRING,
+      email: {
+        type: DataTypes.STRING,
+        validate: {
+          isEmail: true,
+        },
+        unique: {
+          args: true,
+          msg: "Email address already in use!",
+        },
+      },
       password: DataTypes.STRING,
     },
     {

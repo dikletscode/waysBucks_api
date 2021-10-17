@@ -5,6 +5,7 @@ const {
   refreshTokenRoute,
   logout,
   refreshToken,
+  getUserForVerify,
 } = require("../controllers/auth");
 const { chat, getChat, sendNotif, findNotif } = require("../controllers/chat");
 
@@ -40,9 +41,8 @@ const route = Router();
 route.post("/register", inputValidation, register);
 route.post("/login", loginValidation, login);
 route.get("/users", jwtVerify, getUser);
-route.get("/profile", jwtVerify, getProfile);
+route.get("/user", jwtVerify, getProfile);
 route.delete("/users/:id", deleteUser);
-
 route.patch("/user", multer.single("image"), jwtVerify, updateProfile);
 route.post("/transaction", multer.single("image"), jwtVerify, transaction);
 route.post("/midtrans", jwtVerify, midtransTransac);

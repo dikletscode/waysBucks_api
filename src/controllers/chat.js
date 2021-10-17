@@ -1,4 +1,5 @@
 const { Notif, Chat } = require("../../models");
+
 exports.sendNotif = async (req, res) => {
   const { recipent, sender, msg } = req.body;
   try {

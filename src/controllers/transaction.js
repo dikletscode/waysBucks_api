@@ -45,7 +45,8 @@ exports.midtransTransac = async (req, res) => {
 };
 
 exports.transaction = async (req, res) => {
-  const { fullname, email, phone, postCode, totalPrice, address } = req.body;
+  const { fullname, id, email, phone, postCode, totalPrice, address } =
+    req.body;
   try {
     let order = await Cart.findAll({ where: { userId: req.user.id } });
     let file = await cloudinary.uploader.upload(req.file.path, {
@@ -53,8 +54,9 @@ exports.transaction = async (req, res) => {
       use_filename: true,
     });
 
-    await Transaction.create(
+    id && await Transaction.create(
       {
+        id: id,
         userId: req.user.id,
         status: "Waiting Approve",
         attachment: file.secure_url,
@@ -89,8 +91,6 @@ exports.transaction = async (req, res) => {
 };
 
 exports.getHistory = async (req, res) => {
-  let limit = parseInt(req.query.limit) || null;
-  console.log(limit, "limit");
   try {
     let data = await Transaction.findAll({
       where: { userId: req.user.id },
@@ -101,7 +101,7 @@ exports.getHistory = async (req, res) => {
           model: History,
           as: "history",
           attributes: { exclude: ["userId"] },
-          limit: limit,
+
           include: [
             {
               model: Product,
@@ -125,7 +125,7 @@ exports.getHistory = async (req, res) => {
     });
     res.json(data);
   } catch (error) {
-    res.send("eror");
+    res.status(500).send("eror");
     console.log(error);
   }
 };

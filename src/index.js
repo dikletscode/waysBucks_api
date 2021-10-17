@@ -21,6 +21,7 @@ const io = require("socket.io")(server, {
 });
 
 let users = [];
+
 io.on("connection", (socket) => {
   socket.on("addUsers", (userId) => {
     users.push({
@@ -42,8 +43,8 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("a user disconnected!");
-    users.filter((item) => item.socketId != socket.id);
-    io.emit("getUsers", users);
+    let user = users.filter((item) => item.socketId == socket.id);
+    io.emit("getUsers", user);
   });
 });
 app.use(express.urlencoded({ extended: true }));

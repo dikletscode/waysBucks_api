@@ -1,6 +1,7 @@
 const { User, Profile } = require("../../models");
 const redis = require("../config/redis");
 const { createAccessToken } = require("../util/accessToken");
+const { registerError } = require("../util/registerError");
 
 exports.register = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -20,12 +21,7 @@ exports.register = async (req, res) => {
 
     res.status(201).send({ message: "account created successfully!" });
   } catch (error) {
-    console.log(error);
-    if (error.parent.code == "ER_DUP_ENTRY") {
-      res.status(409).send({ message: "email has been used!" });
-    } else {
-      res.status(500).send({ message: "an error occured" });
-    }
+    registerError(error, res);
   }
 };
 
@@ -53,7 +49,7 @@ exports.login = async (req, res) => {
       token: token,
       user: dataClient,
     };
-    console.log(data);
+
     res.status(201).send(data);
   } catch (err) {
     if (err.error == true || err instanceof TypeError) {
@@ -65,5 +61,20 @@ exports.login = async (req, res) => {
       console.log(err);
       res.status(500).send({ message: "system is being repaired" });
     }
+  }
+};
+
+exports.getUserForVerify = async (req, res) => {
+  try {
+    let user = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+
+    res.status(200).send({ user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "an error occured" });
   }
 };

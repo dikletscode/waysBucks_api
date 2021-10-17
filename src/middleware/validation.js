@@ -10,11 +10,6 @@ const schemaLogin = Joi.object({
   email: Joi.string().email().min(6).required(),
   password: Joi.string().min(6).required(),
 });
-const schemaResetPsw = Joi.object({
-  email: Joi.string().email().min(6).required(),
-  password: Joi.string().min(6).required(),
-  newPassword: Joi.string().min(6).required(),
-});
 
 exports.inputValidation = (req, res, next) => {
   const { error } = schema.validate(req.body);
@@ -23,9 +18,9 @@ exports.inputValidation = (req, res, next) => {
   if (valid) {
     next();
   } else {
-    console.log(error);
+    const msg = error.message.replace(/"/g, `'`);
     res.status(422).send({
-      message: "invalid input",
+      message: msg,
     });
   }
 };
@@ -37,9 +32,9 @@ exports.loginValidation = (req, res, next) => {
   if (valid) {
     next();
   } else {
-    console.log(error);
+    const msg = error.message.replace(/"/g, `'`);
     res.status(422).send({
-      message: "invalid input",
+      message: msg,
     });
   }
 };
@@ -50,9 +45,9 @@ exports.passwordValidation = (req, res, next) => {
   if (valid) {
     next();
   } else {
-    console.log(error);
+    const msg = error.message.replace(/"/g, `'`);
     res.status(422).send({
-      message: "invalid input",
+      message: msg,
     });
   }
 };

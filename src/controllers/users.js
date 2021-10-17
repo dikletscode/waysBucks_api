@@ -4,12 +4,11 @@ const cloudinary = require("../config/cloudinary");
 exports.getUser = async (req, res) => {
   try {
     let users = await User.findAll({
-      attributes: ["id", "email", "role"],
+      attributes: { exclude: ["password"] },
       include: { model: Profile, as: "profile" },
     });
-    res.status(201).send({ users: users });
+    res.status(200).send({ users: users });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
@@ -18,13 +17,12 @@ exports.getProfile = async (req, res) => {
   try {
     let users = await User.findOne({
       where: { id: req.user.id },
-      attributes: ["email", "createdAt"],
+      attributes: ["email", "id", "createdAt", "role"],
       include: { model: Profile, as: "profile" },
     });
-    console.log(req.user.id, users);
-    res.status(201).send({ users: users });
+
+    res.status(200).send({ users: users });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ error: { message: "an Error occurred" } });
   }
 };
@@ -58,7 +56,6 @@ exports.updateProfile = async (req, res) => {
 
     res.status(201).send({ users: newData });
   } catch (error) {
-    console.log(error);
     res.status(500).send({ message: error ? error : "an Error occurred" });
   }
 };

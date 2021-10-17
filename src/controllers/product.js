@@ -6,8 +6,6 @@ exports.createProducts = async (req, res) => {
   const { title, price } = req.body;
   if (req.user.role == 1) {
     try {
-      console.log(req.file.path);
-
       let file = await cloudinary.uploader.upload(req.file.path, {
         folder: "products",
         use_filename: true,
@@ -19,10 +17,9 @@ exports.createProducts = async (req, res) => {
         image: file.secure_url,
         cloudId: file.public_id,
       });
-
-      res.send({ product: data });
+      await redis.removeCache("products");
+      res.status(200).send({ product: data });
     } catch (error) {
-      console.log(error);
       res.status(500).send({ error: { message: "an Error occurred" } });
     }
   } else {
@@ -34,13 +31,16 @@ exports.createProducts = async (req, res) => {
 
 exports.getProducts = async (req, res) => {
   try {
-
-    let data = await Product.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
-    });
-   
-    res.send({ product: data });
-  
+    let cache = await redis.getCache("products");
+    if (cache) {
+      res.status(200).send({ product: JSON.parse(cache) });
+    } else {
+      let data = await Product.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      });
+      redis.setCache("products", JSON.stringify(data));
+      res.status(200).send({ product: data });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: { message: "an Error occurred" } });
@@ -54,7 +54,7 @@ exports.getDetailProduct = async (req, res) => {
       where: { id: id },
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
-    res.send({ product: data });
+    res.status(200).send({ product: data });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: { message: "an Error occurred" } });
@@ -108,23 +108,6 @@ exports.deleteProduct = async (req, res) => {
       let data = await Product.destroy({ where: { id: id } });
       await cloudinary.uploader.destroy(data.cloudId);
       await redis.removeCache("products");
-      res.send({ product: data });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({ error: { message: "an Error occurred" } });
-    }
-  } else {
-    res
-      .status(403)
-      .send({ message: "you are not given permission to access this" });
-  }
-};
-exports.chartProduct = async (req, res) => {
-  let id = req.params.id;
-  if (req.user.role == 1) {
-    try {
-      let data = await Product.findAndCountAll({ where: { id: id } });
-      await cloudinary.uploader.destroy(data.cloudId);
       res.send({ product: data });
     } catch (error) {
       console.log(error);
