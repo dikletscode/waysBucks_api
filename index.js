@@ -10,13 +10,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://waysbuck.netlify.app",
+    origin: process.env.CLIENT_URL,
   })
 );
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://waysbuck.netlify.app",
+    origin: process.env.CLIENT_URL,
   },
 });
 
