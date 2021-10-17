@@ -1,9 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const http = require("http");
-const user = require("./routes/user");
-const topping = require("./routes/topping");
-const product = require("./routes/product");
+const user = require("./src/routes/user");
+const topping = require("./src/routes/topping");
+const product = require("./src/routes/product");
 const port = process.env.PORT || 2021;
 const cors = require("cors");
 const app = express();
