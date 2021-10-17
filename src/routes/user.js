@@ -1,13 +1,6 @@
 const { Router } = require("express");
-const {
-  register,
-  login,
-  refreshTokenRoute,
-  logout,
-  refreshToken,
-  getUserForVerify,
-} = require("../controllers/auth");
-const { chat, getChat, sendNotif, findNotif } = require("../controllers/chat");
+const { register, login } = require("../controllers/auth");
+const { chat, getChat } = require("../controllers/chat");
 
 const {
   transaction,
@@ -56,7 +49,6 @@ route.patch("/transaction/:id", jwtVerify, updateQty);
 route.patch("/transactions", jwtVerify, updateTransaction);
 route.get("/count", bestProduct);
 route.patch("/chat", jwtVerify, chat);
-route.post("/notification", jwtVerify, sendNotif);
-route.get("/notification", jwtVerify, findNotif);
+
 route.get("/chat", jwtVerify, getChat);
 module.exports = route;

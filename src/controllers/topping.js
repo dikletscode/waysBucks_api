@@ -1,6 +1,5 @@
 const { Product, Topping } = require("../../models");
 const cloudinary = require("../config/cloudinary");
-const redis = require("../config/redis");
 
 exports.createTopping = async (req, res) => {
   const { title, price } = req.body;
@@ -17,7 +16,6 @@ exports.createTopping = async (req, res) => {
         image: imageUrl.secure_url,
         cloudId: imageUrl.public_id,
       });
-      await redis.removeCache("toppings");
 
       res.status(201).send({ product: data });
     } catch (error) {
@@ -33,16 +31,11 @@ exports.createTopping = async (req, res) => {
 
 exports.getToppings = async (req, res) => {
   try {
-    let cache = await redis.getCache("toppings");
-    if (cache) {
-      res.status(200).send({ product: JSON.parse(cache) });
-    } else {
-      let data = await Topping.findAll({
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-      });
-      redis.setCache("toppings", JSON.stringify(data));
-      res.status(200).send({ product: data });
-    }
+    let data = await Topping.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+
+    res.status(200).send({ product: data });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "an Error occurred" });
@@ -84,7 +77,7 @@ exports.editTopping = async (req, res) => {
       },
       { where: { id: id } }
     );
-    await redis.removeCache("toppings");
+
     if (file && topping.cloudId != null) {
       await cloudinary.uploader.destroy(topping.cloudId);
     }
@@ -102,7 +95,7 @@ exports.deleteTopping = async (req, res) => {
   try {
     let topping = await Topping.findByPk(id);
     let data = await Topping.destroy({ where: { id: id } });
-    await redis.removeCache("toppings");
+
     await cloudinary.uploader.destroy(topping.cloudId);
     res.send({ product: data });
   } catch (error) {

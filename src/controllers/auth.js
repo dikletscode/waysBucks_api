@@ -1,5 +1,4 @@
 const { User, Profile } = require("../../models");
-const redis = require("../config/redis");
 const { createAccessToken } = require("../util/accessToken");
 const { registerError } = require("../util/registerError");
 

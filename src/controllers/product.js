@@ -1,6 +1,5 @@
 const { Product } = require("../../models");
 const cloudinary = require("../config/cloudinary");
-const redis = require("../config/redis");
 
 exports.createProducts = async (req, res) => {
   const { title, price } = req.body;
@@ -17,7 +16,7 @@ exports.createProducts = async (req, res) => {
         image: file.secure_url,
         cloudId: file.public_id,
       });
-      await redis.removeCache("products");
+
       res.status(200).send({ product: data });
     } catch (error) {
       res.status(500).send({ error: { message: "an Error occurred" } });
@@ -31,16 +30,11 @@ exports.createProducts = async (req, res) => {
 
 exports.getProducts = async (req, res) => {
   try {
-    let cache = await redis.getCache("products");
-    if (cache) {
-      res.status(200).send({ product: JSON.parse(cache) });
-    } else {
-      let data = await Product.findAll({
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-      });
-      redis.setCache("products", JSON.stringify(data));
-      res.status(200).send({ product: data });
-    }
+    let data = await Product.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+
+    res.status(200).send({ product: data });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: { message: "an Error occurred" } });
@@ -72,7 +66,6 @@ exports.editProduct = async (req, res) => {
             use_filename: true,
           })
         : null;
-      console.log(file);
 
       const product = await Product.findByPk(id);
       await Product.update(
@@ -87,7 +80,6 @@ exports.editProduct = async (req, res) => {
       if (file) {
         await cloudinary.uploader.destroy(product.cloudId);
       }
-      await redis.removeCache("products");
 
       res.send({ product: "success" });
     } catch (error) {
@@ -107,7 +99,7 @@ exports.deleteProduct = async (req, res) => {
     try {
       let data = await Product.destroy({ where: { id: id } });
       await cloudinary.uploader.destroy(data.cloudId);
-      await redis.removeCache("products");
+
       res.send({ product: data });
     } catch (error) {
       console.log(error);
