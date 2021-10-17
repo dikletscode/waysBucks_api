@@ -6,7 +6,7 @@ const jwtVerify = (req, res, next) => {
   //   console.log(auth);
   if (auth) {
     const token = auth && auth.split(" ")[1];
-    jwt.verify(token, process.env.SECRET_TOKEN, (err, decode) => {
+    jwt.verify(token, process.env.JWT_KEY, (err, decode) => {
       if (err) {
         const message =
           err.name === "JsonWebTokenError"
